@@ -1,0 +1,16 @@
+{
+  "name": "Daily Trend Check",
+  "schedule": {
+    "kind": "cron",
+    "expr": "0 9 * * *",
+    "tz": "America/Chicago"
+  },
+  "payload": {
+    "kind": "agentTurn",
+    "message": "Run yoinkit trending for youtube (--category tech) and tiktok. Summarize what's trending today and flag any viral content (>500K views) I should consider responding to."
+  },
+  "sessionTarget": "isolated",
+  "delivery": {
+    "mode": "announce"
+  }
+}

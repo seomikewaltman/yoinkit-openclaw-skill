@@ -1,0 +1,16 @@
+{
+  "name": "Viral Content Alert",
+  "schedule": {
+    "kind": "every",
+    "everyMs": 7200000
+  },
+  "payload": {
+    "kind": "agentTurn",
+    "message": "Check yoinkit trending for youtube and tiktok. Look for content in my niches (AI, productivity, tech) that's going viral (uploaded <24h ago with >100K views). If you find something, alert me with a suggested content response strategy. If nothing notable, just log that you checked."
+  },
+  "sessionTarget": "isolated",
+  "delivery": {
+    "mode": "announce",
+    "channel": "telegram"
+  }
+}

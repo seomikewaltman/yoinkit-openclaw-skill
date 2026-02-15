@@ -1,0 +1,17 @@
+{
+  "name": "Weekly Deep Research",
+  "schedule": {
+    "kind": "cron",
+    "expr": "0 10 * * 1",
+    "tz": "America/Chicago"
+  },
+  "payload": {
+    "kind": "agentTurn",
+    "message": "Run yoinkit research on my content niches (AI tools, productivity, creator economy) with --depth deep --platforms youtube,tiktok,reddit. Pull transcripts from the top 3 videos in each niche. Identify content gaps and suggest 3 video ideas I haven't covered yet. Save the report to my Obsidian vault.",
+    "timeoutSeconds": 300
+  },
+  "sessionTarget": "isolated",
+  "delivery": {
+    "mode": "announce"
+  }
+}
