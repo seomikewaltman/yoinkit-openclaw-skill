@@ -1,13 +1,13 @@
-# yoinkit-social
+# yoinkit
 
 OpenClaw skill for social media research powered by Yoinkit.
 
 ## Features
 
-- 🔍 **Search** — Find content across YouTube, TikTok, Twitter, Instagram, Reddit, and more
-- 📈 **Trending** — See what's trending on each platform
-- 📝 **Transcripts** — Extract transcripts from videos
-- 📊 **Research** — Automated research workflows combining multiple API calls
+- **Search** — Find content across YouTube, TikTok, Instagram, Reddit, Pinterest
+- **Trending** — See what's trending on YouTube and TikTok
+- **Transcripts** — Extract transcripts from videos (YouTube, TikTok, Instagram, Twitter, Facebook)
+- **Research** — Automated research workflows combining multiple API calls
 
 ## Requirements
 
@@ -26,7 +26,7 @@ git clone https://github.com/seomikewaltman/yoinkit-openclaw-skill.git
 {
   "skills": {
     "entries": {
-      "yoinkit-social": {
+      "yoinkit": {
         "path": "/path/to/yoinkit-openclaw-skill",
         "env": {
           "YOINKIT_API_TOKEN": "your-token-here"
@@ -40,7 +40,7 @@ git clone https://github.com/seomikewaltman/yoinkit-openclaw-skill.git
 Or configure via chat:
 
 ```
-/config skills.yoinkit-social.env.YOINKIT_API_TOKEN "your-token"
+/config skills.yoinkit.env.YOINKIT_API_TOKEN "your-token"
 ```
 
 ## Usage
@@ -61,7 +61,7 @@ yoinkit search youtube "AI tools for creators" --limit 10
 yoinkit trending tiktok --country US
 
 # Full research workflow
-yoinkit research "home automation" --platforms youtube,reddit --depth deep
+yoinkit research "home automation" --platforms youtube,reddit --transcripts
 ```
 
 ### Natural Language

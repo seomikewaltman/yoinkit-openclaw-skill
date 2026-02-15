@@ -1,6 +1,6 @@
 #!/bin/bash
 # yoinkit transcript <url>
-# Extract transcript from a video URL
+# Extract transcript from video URL
 
 set -e
 
@@ -14,28 +14,25 @@ fi
 
 if [ -z "$YOINKIT_API_TOKEN" ]; then
     echo "Error: YOINKIT_API_TOKEN not configured"
-    echo "Set it via: /config skills.yoinkit-social.env.YOINKIT_API_TOKEN \"your-token\""
     exit 1
 fi
 
 API_BASE="${YOINKIT_API_URL:-https://yoinkit.com/api/v1/openclaw}"
 
-# Detect platform from URL
+# Detect platform and construct endpoint
 if [[ "$URL" == *"youtube.com"* ]] || [[ "$URL" == *"youtu.be"* ]]; then
-    # Extract video ID
-    if [[ "$URL" == *"youtu.be"* ]]; then
-        VIDEO_ID=$(echo "$URL" | sed 's/.*youtu\.be\///' | sed 's/\?.*//')
-    else
-        VIDEO_ID=$(echo "$URL" | sed 's/.*[?&]v=//' | sed 's/&.*//')
-    fi
-    ENDPOINT="youtube/transcript?id=$VIDEO_ID"
+    ENDPOINT="youtube/transcript?url=$(echo "$URL" | jq -sRr @uri)"
 elif [[ "$URL" == *"tiktok.com"* ]]; then
     ENDPOINT="tiktok/transcript?url=$(echo "$URL" | jq -sRr @uri)"
 elif [[ "$URL" == *"instagram.com"* ]]; then
     ENDPOINT="instagram/transcript?url=$(echo "$URL" | jq -sRr @uri)"
+elif [[ "$URL" == *"twitter.com"* ]] || [[ "$URL" == *"x.com"* ]]; then
+    ENDPOINT="twitter/transcript?url=$(echo "$URL" | jq -sRr @uri)"
+elif [[ "$URL" == *"facebook.com"* ]]; then
+    ENDPOINT="facebook/transcript?url=$(echo "$URL" | jq -sRr @uri)"
 else
-    echo "Error: Unsupported platform"
-    echo "Supported: YouTube, TikTok, Instagram Reels"
+    echo "Error: Platform does not support transcripts or URL not recognized"
+    echo "Supported: YouTube, TikTok, Instagram, Twitter/X, Facebook"
     exit 1
 fi
 
@@ -45,10 +42,10 @@ RESPONSE=$(curl -s -H "Authorization: Bearer $YOINKIT_API_TOKEN" \
 
 # Check for errors
 if echo "$RESPONSE" | jq -e '.success == false' > /dev/null 2>&1; then
-    ERROR=$(echo "$RESPONSE" | jq -r '.error.message')
+    ERROR=$(echo "$RESPONSE" | jq -r '.error.message // .error // "Unknown error"')
     echo "Error: $ERROR"
     exit 1
 fi
 
-# Output transcript
-echo "$RESPONSE" | jq -r '.data.transcript // .data'
+# Output transcript from data wrapper
+echo "$RESPONSE" | jq -r '.data.transcript // .data // .'

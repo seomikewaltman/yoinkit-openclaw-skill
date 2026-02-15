@@ -1,40 +1,19 @@
 #!/bin/bash
-# yoinkit trending <platform> [options]
-# Get trending content on a platform
+# yoinkit trending <platform>
+# Get trending content across platforms
 
 set -e
 
 PLATFORM="$1"
-shift || true
+shift 2>/dev/null || true
 
-# Parse options
-LIMIT=20
-COUNTRY="US"
-CATEGORY=""
+# Supported platforms with trending
+SUPPORTED_PLATFORMS=("youtube" "tiktok")
 
-while [[ $# -gt 0 ]]; do
-    case "$1" in
-        --limit)
-            LIMIT="$2"
-            shift 2
-            ;;
-        --country)
-            COUNTRY="$2"
-            shift 2
-            ;;
-        --category)
-            CATEGORY="$2"
-            shift 2
-            ;;
-        *)
-            shift
-            ;;
-    esac
-done
-
-if [ -z "$PLATFORM" ]; then
-    echo "Error: Platform required"
-    echo "Usage: yoinkit trending <platform> [--limit N] [--country CODE] [--category CAT]"
+# Validate platform
+if [[ ! " ${SUPPORTED_PLATFORMS[@]} " =~ " ${PLATFORM} " ]]; then
+    echo "Error: Platform $PLATFORM does not support trending or is not supported"
+    echo "Supported platforms: ${SUPPORTED_PLATFORMS[*]}"
     exit 1
 fi
 
@@ -45,13 +24,55 @@ fi
 
 API_BASE="${YOINKIT_API_URL:-https://yoinkit.com/api/v1/openclaw}"
 
-# Build query params
-PARAMS="limit=$LIMIT&country=$COUNTRY"
-if [ -n "$CATEGORY" ]; then
-    PARAMS="$PARAMS&category=$CATEGORY"
-fi
+# Default parameters
+LIMIT=20
+COUNTRY="US"
+TYPE="trending"  # For TikTok: trending, popular, hashtags
 
-ENDPOINT="$PLATFORM/trending?$PARAMS"
+# Parse additional options
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        --limit)
+            LIMIT="$2"
+            shift 2
+            ;;
+        --country)
+            COUNTRY="$2"
+            shift 2
+            ;;
+        --type)
+            TYPE="$2"
+            shift 2
+            ;;
+        *)
+            echo "Unknown option: $1"
+            exit 1
+            ;;
+    esac
+done
+
+# Construct endpoint based on platform and type
+if [[ "$PLATFORM" == "youtube" ]]; then
+    ENDPOINT="youtube/trending?country=$COUNTRY&limit=$LIMIT"
+elif [[ "$PLATFORM" == "tiktok" ]]; then
+    case "$TYPE" in
+        trending)
+            ENDPOINT="tiktok/trending?country=$COUNTRY"
+            ;;
+        popular)
+            ENDPOINT="tiktok/popular?limit=$LIMIT"
+            ;;
+        hashtags)
+            ENDPOINT="tiktok/hashtags?limit=$LIMIT"
+            ;;
+        *)
+            echo "Error: Unknown TikTok trending type: $TYPE"
+            echo "Supported types: trending, popular, hashtags"
+            exit 1
+            ;;
+    esac
+fi
 
 # Make API request
 RESPONSE=$(curl -s -H "Authorization: Bearer $YOINKIT_API_TOKEN" \
@@ -59,10 +80,10 @@ RESPONSE=$(curl -s -H "Authorization: Bearer $YOINKIT_API_TOKEN" \
 
 # Check for errors
 if echo "$RESPONSE" | jq -e '.success == false' > /dev/null 2>&1; then
-    ERROR=$(echo "$RESPONSE" | jq -r '.error.message')
+    ERROR=$(echo "$RESPONSE" | jq -r '.error.message // .error // "Unknown error"')
     echo "Error: $ERROR"
     exit 1
 fi
 
-# Output results
-echo "$RESPONSE" | jq '.data'
+# Output formatted results from data wrapper
+echo "$RESPONSE" | jq '.data // .'

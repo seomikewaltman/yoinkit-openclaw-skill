@@ -1,6 +1,13 @@
-# Yoinkit Social — OpenClaw Skill
+# Yoinkit — OpenClaw Skill
 
-Research trending content and pull transcripts from social platforms.
+Research content and pull transcripts from social platforms.
+
+## Platform Reference
+
+**Before running commands**, check [references/platforms.md](references/platforms.md) for:
+- Which platforms support transcript/trending/search/user feed
+- Platform-specific parameters and options
+- How to handle unsupported operations
 
 ## Requirements
 
@@ -13,7 +20,7 @@ Set your API token in OpenClaw config:
 
 ```bash
 # Via chat command
-/config skills.yoinkit-social.env.YOINKIT_API_TOKEN "your-token-here"
+/config skills.yoinkit.env.YOINKIT_API_TOKEN "your-token-here"
 ```
 
 Or edit `~/.openclaw/openclaw.json`:
@@ -22,7 +29,7 @@ Or edit `~/.openclaw/openclaw.json`:
 {
   "skills": {
     "entries": {
-      "yoinkit-social": {
+      "yoinkit": {
         "path": "/path/to/yoinkit-openclaw-skill",
         "env": {
           "YOINKIT_API_TOKEN": "your-token-here"
@@ -37,43 +44,47 @@ Or edit `~/.openclaw/openclaw.json`:
 
 ### `yoinkit transcript <url>`
 
-Extract transcript from any video URL.
+Extract transcript from video URL.
 
-**Supported:** YouTube, TikTok, Instagram Reels, Facebook, Twitch
+**Supported:** YouTube, TikTok, Instagram, Twitter/X, Facebook
 
 ```bash
 yoinkit transcript https://youtube.com/watch?v=abc123
 yoinkit transcript https://tiktok.com/@user/video/123
+yoinkit transcript https://instagram.com/reel/abc123
 ```
 
 ---
 
 ### `yoinkit content <url>`
 
-Get full content and metadata from any social post.
+Get full content and metadata from social post.
 
-**Supported:** All 14 platforms (YouTube, TikTok, Instagram, Twitter/X, Reddit, LinkedIn, etc.)
+**Supported:** YouTube, TikTok, Instagram, Twitter/X, Facebook, LinkedIn, Reddit, Pinterest, Threads, Bluesky, Truth Social, Twitch, Kick
 
 ```bash
 yoinkit content https://twitter.com/user/status/123
 yoinkit content https://reddit.com/r/technology/comments/abc
+yoinkit content https://bsky.app/profile/user.bsky.social/post/abc
 ```
 
 ---
 
 ### `yoinkit search <platform> "<query>" [options]`
 
-Search for content on a platform.
+Search content on a platform.
+
+**Supported for Search:** YouTube, TikTok, Instagram, Reddit, Pinterest
 
 **Options:**
 - `--limit N` — Number of results (default: 10)
-- `--sort TYPE` — Sort by: relevance, date, views
-- `--time RANGE` — Time filter: hour, day, week, month, year
+- `--sort TYPE` — Sort by: relevance, date, views (platform-dependent)
 
 ```bash
 yoinkit search youtube "AI tools for creators"
 yoinkit search tiktok "productivity tips" --limit 20
-yoinkit search reddit "home automation" --sort top --time week
+yoinkit search reddit "home automation" --sort top
+yoinkit search instagram "fitness motivation" --limit 10
 ```
 
 ---
@@ -82,85 +93,54 @@ yoinkit search reddit "home automation" --sort top --time week
 
 Get currently trending content.
 
+**Supported for Trending:** YouTube, TikTok
+
 **Options:**
-- `--category CAT` — Category filter (YouTube: tech, gaming, music, etc.)
 - `--country CODE` — Country code (default: US)
 - `--limit N` — Number of results (default: 20)
+- `--type TYPE` — For TikTok: `trending`, `popular`, or `hashtags`
 
 ```bash
-yoinkit trending youtube --category tech
+yoinkit trending youtube --country US
 yoinkit trending tiktok --country US
-yoinkit trending reddit
+yoinkit trending tiktok --type popular --limit 50
+yoinkit trending tiktok --type hashtags
 ```
 
 ---
 
 ### `yoinkit research "<topic>" [options]`
 
-Automated research workflow — combines search, trending, and optional transcripts.
+Automated research workflow — combines search and trending across platforms.
 
 **Options:**
-- `--platforms LIST` — Comma-separated platforms (default: youtube,tiktok,twitter)
-- `--depth MODE` — Research depth: quick, normal, deep
-- `--transcripts` — Pull transcripts from top videos (deep mode only)
+- `--platforms LIST` — Comma-separated platforms (default: youtube,tiktok)
+- `--transcripts` — Also fetch transcripts from top results
+- `--limit N` — Results per platform (default: 10)
 
 ```bash
 yoinkit research "home automation"
-yoinkit research "AI tools" --platforms youtube,tiktok,reddit --depth deep
+yoinkit research "AI tools" --platforms youtube,tiktok,reddit
+yoinkit research "productivity" --transcripts --limit 5
 ```
 
 **What it does:**
 1. Searches each platform for the topic
-2. Gets trending content in that space
-3. (Deep mode) Pulls transcripts from top videos
-4. Summarizes themes, angles, and opportunities
+2. Gets trending content from supported platforms
+3. Optionally fetches transcripts from top video results
+4. Returns combined results for analysis
 
 ---
 
 ## Natural Language
 
-You don't need exact command syntax. Just ask your assistant naturally:
+You don't need exact command syntax:
 
-> "What's trending on YouTube in tech?"
+> "What's trending on TikTok?"
 
-> "Pull the transcript from this TikTok: [url]"
+> "Pull the transcript from this YouTube video: [url]"
 
-> "Find viral Reddit posts about home automation from this week"
-
-> "Do deep research on creator economy trends"
-
----
-
-## Cron Examples
-
-### Daily Trend Check (9 AM)
-
-```json
-{
-  "name": "Daily Trends",
-  "schedule": { "kind": "cron", "expr": "0 9 * * *", "tz": "America/Chicago" },
-  "payload": {
-    "kind": "agentTurn",
-    "message": "Check yoinkit trending for youtube and tiktok in tech/AI. Summarize what's hot today."
-  },
-  "sessionTarget": "isolated",
-  "delivery": { "mode": "announce" }
-}
-```
-
-### Weekly Deep Research (Monday 10 AM)
-
-```json
-{
-  "name": "Weekly Research",
-  "schedule": { "kind": "cron", "expr": "0 10 * * 1", "tz": "America/Chicago" },
-  "payload": {
-    "kind": "agentTurn",
-    "message": "Run yoinkit research on my niches (AI tools, productivity, creator economy) with --depth deep. Identify 3 content ideas I haven't covered."
-  },
-  "sessionTarget": "isolated"
-}
-```
+> "Find popular Reddit posts about home automation"
 
 ---
 
@@ -169,7 +149,7 @@ You don't need exact command syntax. Just ask your assistant naturally:
 All requests go through your Yoinkit subscription:
 
 ```
-https://yoinkit.com/api/v1/openclaw/
+https://yoinkit.com/api/v1/openclaw
 ```
 
 ---

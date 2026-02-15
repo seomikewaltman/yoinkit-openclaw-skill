@@ -1,41 +1,26 @@
 #!/bin/bash
-# yoinkit search <platform> "<query>" [options]
-# Search for content on a platform
+# yoinkit search <platform> <query>
+# Search content across social platforms
 
 set -e
 
 PLATFORM="$1"
 QUERY="$2"
-shift 2 || true
+shift 2 2>/dev/null || true
 
-# Parse options
-LIMIT=10
-SORT="relevance"
-TIME=""
+# Supported platforms with search
+SUPPORTED_PLATFORMS=("youtube" "tiktok" "instagram" "reddit" "pinterest")
 
-while [[ $# -gt 0 ]]; do
-    case "$1" in
-        --limit)
-            LIMIT="$2"
-            shift 2
-            ;;
-        --sort)
-            SORT="$2"
-            shift 2
-            ;;
-        --time)
-            TIME="$2"
-            shift 2
-            ;;
-        *)
-            shift
-            ;;
-    esac
-done
+# Validate platform
+if [[ ! " ${SUPPORTED_PLATFORMS[@]} " =~ " ${PLATFORM} " ]]; then
+    echo "Error: Platform $PLATFORM does not support search or is not supported"
+    echo "Supported platforms: ${SUPPORTED_PLATFORMS[*]}"
+    exit 1
+fi
 
-if [ -z "$PLATFORM" ] || [ -z "$QUERY" ]; then
-    echo "Error: Platform and query required"
-    echo "Usage: yoinkit search <platform> \"<query>\" [--limit N] [--sort TYPE] [--time RANGE]"
+if [ -z "$QUERY" ]; then
+    echo "Error: Query required"
+    echo "Usage: yoinkit search <platform> \"<query>\" [options]"
     exit 1
 fi
 
@@ -46,24 +31,45 @@ fi
 
 API_BASE="${YOINKIT_API_URL:-https://yoinkit.com/api/v1/openclaw}"
 
-# Build query params
-PARAMS="query=$(echo "$QUERY" | jq -sRr @uri)&limit=$LIMIT&sort=$SORT"
-if [ -n "$TIME" ]; then
-    PARAMS="$PARAMS&time=$TIME"
-fi
+# Default parameters
+LIMIT=10
+SORT=""
 
-ENDPOINT="$PLATFORM/search?$PARAMS"
+# Parse additional options
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        --limit)
+            LIMIT="$2"
+            shift 2
+            ;;
+        --sort)
+            SORT="$2"
+            shift 2
+            ;;
+        *)
+            echo "Unknown option: $1"
+            exit 1
+            ;;
+    esac
+done
+
+# Build query params
+QUERY_PARAMS="query=$(echo "$QUERY" | jq -sRr @uri)&limit=$LIMIT"
+if [ -n "$SORT" ]; then
+    QUERY_PARAMS+="&sort=$SORT"
+fi
 
 # Make API request
 RESPONSE=$(curl -s -H "Authorization: Bearer $YOINKIT_API_TOKEN" \
-    "$API_BASE/$ENDPOINT")
+    "$API_BASE/$PLATFORM/search?$QUERY_PARAMS")
 
 # Check for errors
 if echo "$RESPONSE" | jq -e '.success == false' > /dev/null 2>&1; then
-    ERROR=$(echo "$RESPONSE" | jq -r '.error.message')
+    ERROR=$(echo "$RESPONSE" | jq -r '.error.message // .error // "Unknown error"')
     echo "Error: $ERROR"
     exit 1
 fi
 
-# Output results
-echo "$RESPONSE" | jq '.data'
+# Output formatted results from data wrapper
+echo "$RESPONSE" | jq '.data // .'
