@@ -1,6 +1,6 @@
 # Yoinkit — OpenClaw Skill
 
-Research content and pull transcripts from social platforms.
+Research content and pull transcripts from 13 social platforms.
 
 ## Platform Reference
 
@@ -42,14 +42,18 @@ Or edit `~/.openclaw/openclaw.json`:
 
 ## Commands
 
-### `yoinkit transcript <url>`
+### `yoinkit transcript <url> [options]`
 
 Extract transcript from video URL.
 
 **Supported:** YouTube, TikTok, Instagram, Twitter/X, Facebook
 
+**Options:**
+- `--language CODE` — 2-letter language code (YouTube, TikTok only). Example: `en`, `es`, `fr`
+
 ```bash
 yoinkit transcript https://youtube.com/watch?v=abc123
+yoinkit transcript https://youtube.com/watch?v=abc123 --language es
 yoinkit transcript https://tiktok.com/@user/video/123
 yoinkit transcript https://instagram.com/reel/abc123
 ```
@@ -58,11 +62,12 @@ yoinkit transcript https://instagram.com/reel/abc123
 
 ### `yoinkit content <url>`
 
-Get full content and metadata from social post.
+Get full content and metadata from a social post.
 
 **Supported:** YouTube, TikTok, Instagram, Twitter/X, Facebook, LinkedIn, Reddit, Pinterest, Threads, Bluesky, Truth Social, Twitch, Kick
 
 ```bash
+yoinkit content https://youtube.com/watch?v=abc123
 yoinkit content https://twitter.com/user/status/123
 yoinkit content https://reddit.com/r/technology/comments/abc
 yoinkit content https://bsky.app/profile/user.bsky.social/post/abc
@@ -72,19 +77,34 @@ yoinkit content https://bsky.app/profile/user.bsky.social/post/abc
 
 ### `yoinkit search <platform> "<query>" [options]`
 
-Search content on a platform.
+Search content on a platform. Each platform has different params — use the ones that apply.
 
-**Supported for Search:** YouTube, TikTok, Instagram, Reddit, Pinterest
+**Supported:** YouTube, TikTok, Instagram, Reddit, Pinterest
 
-**Options:**
-- `--limit N` — Number of results (default: 10)
-- `--sort TYPE` — Sort by: relevance, date, views (platform-dependent)
+**Common options:**
+- `--sort TYPE` — Sort results (platform-specific values, see below)
+- `--time PERIOD` — Filter by time (platform-specific values, see below)
+- `--cursor TOKEN` — Pagination cursor from previous response
+- `--continuation TOKEN` — YouTube pagination token
+- `--page N` — Page number (Instagram only)
+
+**Platform-specific sort values:**
+- YouTube: `relevance`, `popular`
+- TikTok: `relevance`, `most-liked`, `date-posted`
+- Reddit: `relevance`, `new`, `top`, `comment_count`
+
+**Platform-specific time values:**
+- YouTube: `today`, `this_week`, `this_month`, `this_year`
+- TikTok: `yesterday`, `this-week`, `this-month`, `last-3-months`, `last-6-months`, `all-time`
+- Reddit: `all`, `day`, `week`, `month`, `year`
 
 ```bash
 yoinkit search youtube "AI tools for creators"
-yoinkit search tiktok "productivity tips" --limit 20
-yoinkit search reddit "home automation" --sort top
-yoinkit search instagram "fitness motivation" --limit 10
+yoinkit search youtube "AI tools" --sort popular --time this_week
+yoinkit search tiktok "productivity tips" --sort most-liked
+yoinkit search reddit "home automation" --sort top --time month
+yoinkit search instagram "fitness motivation" --page 2
+yoinkit search pinterest "Italian recipes"
 ```
 
 ---
@@ -93,18 +113,22 @@ yoinkit search instagram "fitness motivation" --limit 10
 
 Get currently trending content.
 
-**Supported for Trending:** YouTube, TikTok
+**Supported:** YouTube, TikTok
 
 **Options:**
-- `--country CODE` — Country code (default: US)
-- `--limit N` — Number of results (default: 20)
-- `--type TYPE` — For TikTok: `trending`, `popular`, or `hashtags`
+- `--type TYPE` — TikTok only: `trending` (default), `popular`, or `hashtags`
+- `--country CODE` — TikTok only: 2-letter country code (default: US)
+- `--period DAYS` — TikTok popular/hashtags: `7`, `30`, or `120`
+- `--page N` — TikTok popular/hashtags: page number
+- `--order TYPE` — TikTok popular only: `hot`, `like`, `comment`, `repost`
+
+**Note:** YouTube trending takes no parameters — it returns currently trending shorts.
 
 ```bash
-yoinkit trending youtube --country US
-yoinkit trending tiktok --country US
-yoinkit trending tiktok --type popular --limit 50
-yoinkit trending tiktok --type hashtags
+yoinkit trending youtube
+yoinkit trending tiktok
+yoinkit trending tiktok --type popular --country US --period 7 --order like
+yoinkit trending tiktok --type hashtags --period 30
 ```
 
 ---
@@ -115,32 +139,37 @@ Automated research workflow — combines search and trending across platforms.
 
 **Options:**
 - `--platforms LIST` — Comma-separated platforms (default: youtube,tiktok)
-- `--transcripts` — Also fetch transcripts from top results
-- `--limit N` — Results per platform (default: 10)
+- `--transcripts` — Also fetch transcripts from top trending results
 
 ```bash
 yoinkit research "home automation"
 yoinkit research "AI tools" --platforms youtube,tiktok,reddit
-yoinkit research "productivity" --transcripts --limit 5
+yoinkit research "productivity" --transcripts
 ```
 
 **What it does:**
 1. Searches each platform for the topic
 2. Gets trending content from supported platforms
 3. Optionally fetches transcripts from top video results
-4. Returns combined results for analysis
+4. Returns combined JSON results for analysis
 
 ---
 
 ## Natural Language
 
-You don't need exact command syntax:
+You don't need exact command syntax. The LLM will map natural requests to the right command:
 
 > "What's trending on TikTok?"
+→ `yoinkit trending tiktok`
 
 > "Pull the transcript from this YouTube video: [url]"
+→ `yoinkit transcript <url>`
 
-> "Find popular Reddit posts about home automation"
+> "Find popular Reddit posts about home automation from this week"
+→ `yoinkit search reddit "home automation" --sort top --time week`
+
+> "Research what creators are doing with AI tools"
+→ `yoinkit research "AI tools" --platforms youtube,tiktok,reddit`
 
 ---
 

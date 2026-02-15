@@ -19,53 +19,55 @@
 ## Endpoint Quick Reference
 
 ### Content (single post/video)
+All take `url` (required):
 - `youtube/video?url=URL`
-- `tiktok/video?url=URL`
-- `instagram/post?url=URL` or `?shortcode=SC`
-- `twitter/tweet?url=URL`
-- `facebook/post?url=URL`
+- `tiktok/video?url=URL` (optional: `get_transcript`, `region`, `trim`)
+- `instagram/post?url=URL` (optional: `trim`)
+- `twitter/tweet?url=URL` (optional: `trim`)
+- `facebook/post?url=URL` (optional: `get_comments`, `get_transcript`)
 - `linkedin/post?url=URL`
-- `reddit/post?url=URL`
-- `pinterest/pin?url=URL`
-- `threads/post?url=URL`
+- `reddit/post?url=URL` (optional: `cursor`, `trim`)
+- `pinterest/pin?url=URL` (optional: `trim`)
+- `threads/post?url=URL` (optional: `trim`)
 - `bluesky/post?url=URL`
 - `truthsocial/post?url=URL`
 - `twitch/clip?url=URL`
 - `kick/clip?url=URL`
 
 ### Transcript
-- `youtube/transcript?url=URL`
-- `tiktok/transcript?url=URL`
+All take `url` (required):
+- `youtube/transcript?url=URL` (optional: `language`)
+- `tiktok/transcript?url=URL` (optional: `language`, `use_ai_as_fallback`)
 - `instagram/transcript?url=URL`
 - `twitter/transcript?url=URL`
 - `facebook/transcript?url=URL`
 
 ### Search
-- `youtube/search?query=Q&limit=N`
-- `youtube/search/hashtag?hashtag=H&limit=N`
-- `tiktok/search?query=Q&limit=N`
-- `tiktok/search/hashtag?hashtag=H&limit=N`
-- `tiktok/search/top?query=Q&limit=N`
-- `instagram/search?query=Q&limit=N`
-- `reddit/search?query=Q&limit=N`
-- `reddit/subreddit?subreddit=S&limit=N&sort=hot|new|top`
-- `reddit/subreddit/search?query=Q&limit=N`
-- `pinterest/search?query=Q&limit=N`
+- `youtube/search?query=Q` (optional: `sortBy`, `uploadDate`, `filter`, `continuationToken`, `includeExtras`)
+- `youtube/search/hashtag?hashtag=H` (optional: `continuationToken`, `type`)
+- `tiktok/search?query=Q` (optional: `sort_by`, `date_posted`, `region`, `cursor`, `trim`)
+- `tiktok/search/hashtag?hashtag=H` (optional: `cursor`, `trim`)
+- `tiktok/search/top?query=Q` (optional: `cursor`, `trim`)
+- `instagram/search?query=Q` (optional: `page`)
+- `reddit/search?query=Q` (optional: `sort`, `timeframe`, `after`, `trim`)
+- `reddit/subreddit?subreddit=NAME` (optional: `sort`, `timeframe`, `cursor`)
+- `reddit/subreddit/search?subreddit=NAME` (optional: `query`, `filter`, `sort`, `timeframe`, `cursor`)
+- `pinterest/search?query=Q` (optional: `cursor`, `trim`)
 
 ### Trending
-- `youtube/trending?country=CC&limit=N`
-- `tiktok/trending?country=CC`
-- `tiktok/popular?limit=N`
-- `tiktok/hashtags?limit=N`
+- `youtube/trending` (no parameters)
+- `tiktok/trending?region=CC` (optional: `trim`)
+- `tiktok/popular` (optional: `period`, `page`, `orderBy`, `countryCode`)
+- `tiktok/hashtags` (optional: `period`, `page`, `countryCode`, `newOnBoard`)
 
 ### User Feed
-- `youtube/channel/videos?channelId=ID` or `?handle=H&limit=N`
-- `tiktok/user/videos?handle=H` or `?user_id=ID&limit=N`
-- `instagram/user/posts?handle=H`
-- `instagram/user/reels?handle=H` or `?user_id=ID`
-- `twitter/user/tweets?handle=H` or `?userId=ID&limit=N`
-- `facebook/user/posts?url=URL` or `?pageId=ID`
-- `facebook/user/reels?url=URL` or `?pageId=ID&cursor=C`
-- `threads/user/posts?handle=H`
-- `bluesky/user/posts?handle=H` or `?user_id=ID&limit=N`
-- `truthsocial/user/posts?handle=H` or `?user_id=ID`
+- `youtube/channel/videos` (use `channelId` or `handle`; optional: `sort`, `continuationToken`, `includeExtras`)
+- `tiktok/user/videos` (use `handle` or `user_id`; optional: `cursor`, `trim`)
+- `instagram/user/posts?handle=H` (optional: `max_id`)
+- `instagram/user/reels` (use `handle` or `user_id`; optional: `max_id`)
+- `twitter/user/tweets` (use `handle` or `userId`; optional: `cursor`, `trim`)
+- `facebook/user/posts` (use `url` or `pageId`; optional: `cursor`)
+- `facebook/user/reels` (use `url` or `pageId`; optional: `cursor`)
+- `threads/user/posts?handle=H` (optional: `max_id`, `trim`)
+- `bluesky/user/posts` (use `handle` or `user_id`; optional: `cursor`)
+- `truthsocial/user/posts` (use `handle` or `user_id`; optional: `max_id`)
