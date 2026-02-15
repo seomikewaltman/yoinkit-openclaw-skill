@@ -18,7 +18,7 @@ if [ -z "$YOINKIT_API_TOKEN" ]; then
     exit 1
 fi
 
-API_BASE="${YOINKIT_API_URL:-https://yoinkit.com/api/v1/openclaw}"
+API_BASE="${YOINKIT_API_URL:-https://yoinkit.ai/api/v1/openclaw}"
 
 # Default parameters
 PLATFORMS=("youtube" "tiktok")

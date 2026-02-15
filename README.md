@@ -12,7 +12,7 @@ OpenClaw skill for social media research powered by Yoinkit.
 ## Requirements
 
 - [OpenClaw](https://openclaw.ai) installed
-- Active [Yoinkit](https://yoinkit.com) subscription
+- Active [Yoinkit](https://yoinkit.ai) subscription
 - API token from Yoinkit Settings → OpenClaw
 
 ## Installation

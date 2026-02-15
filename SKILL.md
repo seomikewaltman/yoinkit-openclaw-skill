@@ -149,7 +149,7 @@ You don't need exact command syntax:
 All requests go through your Yoinkit subscription:
 
 ```
-https://yoinkit.com/api/v1/openclaw
+https://yoinkit.ai/api/v1/openclaw
 ```
 
 ---
@@ -163,4 +163,4 @@ Full API documentation: https://openclaw.yoinkit.ai
 ## Support
 
 - Issues: https://github.com/seomikewaltman/yoinkit-openclaw-skill/issues
-- Yoinkit: https://yoinkit.com
+- Yoinkit: https://yoinkit.ai
