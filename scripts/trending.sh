@@ -25,24 +25,34 @@ fi
 API_BASE="${YOINKIT_API_URL:-https://yoinkit.ai/api/v1/openclaw}"
 
 # Default parameters
-LIMIT=20
-COUNTRY="US"
-TYPE="trending"  # For TikTok: trending, popular, hashtags
+TYPE="trending"        # For TikTok: trending, popular, hashtags
+COUNTRY="US"           # For TikTok trending: region
+PERIOD=""              # For TikTok popular/hashtags: 7, 30
+PAGE=""                # For TikTok popular/hashtags: page number
+ORDER=""               # For TikTok popular: hot, like, comment, repost
 
 # Parse additional options
 while [[ $# -gt 0 ]]; do
     key="$1"
     case $key in
-        --limit)
-            LIMIT="$2"
+        --type)
+            TYPE="$2"
             shift 2
             ;;
         --country)
             COUNTRY="$2"
             shift 2
             ;;
-        --type)
-            TYPE="$2"
+        --period)
+            PERIOD="$2"
+            shift 2
+            ;;
+        --page)
+            PAGE="$2"
+            shift 2
+            ;;
+        --order)
+            ORDER="$2"
             shift 2
             ;;
         *)
@@ -54,17 +64,26 @@ done
 
 # Construct endpoint based on platform and type
 if [[ "$PLATFORM" == "youtube" ]]; then
-    ENDPOINT="youtube/trending?country=$COUNTRY&limit=$LIMIT"
+    # YouTube trending takes NO parameters
+    ENDPOINT="youtube/trending"
 elif [[ "$PLATFORM" == "tiktok" ]]; then
     case "$TYPE" in
         trending)
-            ENDPOINT="tiktok/trending?country=$COUNTRY"
+            # Params: region (required), trim
+            ENDPOINT="tiktok/trending?region=$COUNTRY"
             ;;
         popular)
-            ENDPOINT="tiktok/popular?limit=$LIMIT"
+            # Params: period (7|30), page, orderBy (like|hot|comment|repost), countryCode
+            ENDPOINT="tiktok/popular?countryCode=$COUNTRY"
+            [ -n "$PERIOD" ] && ENDPOINT+="&period=$PERIOD"
+            [ -n "$PAGE" ] && ENDPOINT+="&page=$PAGE"
+            [ -n "$ORDER" ] && ENDPOINT+="&orderBy=$ORDER"
             ;;
         hashtags)
-            ENDPOINT="tiktok/hashtags?limit=$LIMIT"
+            # Params: period (7|30|120), page, countryCode, newOnBoard
+            ENDPOINT="tiktok/hashtags?countryCode=$COUNTRY"
+            [ -n "$PERIOD" ] && ENDPOINT+="&period=$PERIOD"
+            [ -n "$PAGE" ] && ENDPOINT+="&page=$PAGE"
             ;;
         *)
             echo "Error: Unknown TikTok trending type: $TYPE"

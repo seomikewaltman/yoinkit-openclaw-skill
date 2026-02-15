@@ -5,10 +5,11 @@
 set -e
 
 URL="$1"
+shift 2>/dev/null || true
 
 if [ -z "$URL" ]; then
     echo "Error: URL required"
-    echo "Usage: yoinkit transcript <url>"
+    echo "Usage: yoinkit transcript <url> [--language en]"
     exit 1
 fi
 
@@ -19,17 +20,44 @@ fi
 
 API_BASE="${YOINKIT_API_URL:-https://yoinkit.ai/api/v1/openclaw}"
 
+# Optional parameters
+LANGUAGE=""
+
+# Parse additional options
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        --language)
+            LANGUAGE="$2"
+            shift 2
+            ;;
+        *)
+            echo "Unknown option: $1"
+            exit 1
+            ;;
+    esac
+done
+
 # Detect platform and construct endpoint
+ENCODED_URL=$(echo "$URL" | jq -sRr @uri)
+
 if [[ "$URL" == *"youtube.com"* ]] || [[ "$URL" == *"youtu.be"* ]]; then
-    ENDPOINT="youtube/transcript?url=$(echo "$URL" | jq -sRr @uri)"
+    # Params: url (required), language
+    ENDPOINT="youtube/transcript?url=$ENCODED_URL"
+    [ -n "$LANGUAGE" ] && ENDPOINT+="&language=$LANGUAGE"
 elif [[ "$URL" == *"tiktok.com"* ]]; then
-    ENDPOINT="tiktok/transcript?url=$(echo "$URL" | jq -sRr @uri)"
+    # Params: url (required), language, use_ai_as_fallback
+    ENDPOINT="tiktok/transcript?url=$ENCODED_URL"
+    [ -n "$LANGUAGE" ] && ENDPOINT+="&language=$LANGUAGE"
 elif [[ "$URL" == *"instagram.com"* ]]; then
-    ENDPOINT="instagram/transcript?url=$(echo "$URL" | jq -sRr @uri)"
+    # Params: url (required)
+    ENDPOINT="instagram/transcript?url=$ENCODED_URL"
 elif [[ "$URL" == *"twitter.com"* ]] || [[ "$URL" == *"x.com"* ]]; then
-    ENDPOINT="twitter/transcript?url=$(echo "$URL" | jq -sRr @uri)"
+    # Params: url (required)
+    ENDPOINT="twitter/transcript?url=$ENCODED_URL"
 elif [[ "$URL" == *"facebook.com"* ]]; then
-    ENDPOINT="facebook/transcript?url=$(echo "$URL" | jq -sRr @uri)"
+    # Params: url (required)
+    ENDPOINT="facebook/transcript?url=$ENCODED_URL"
 else
     echo "Error: Platform does not support transcripts or URL not recognized"
     echo "Supported: YouTube, TikTok, Instagram, Twitter/X, Facebook"
@@ -47,5 +75,5 @@ if echo "$RESPONSE" | jq -e '.success == false' > /dev/null 2>&1; then
     exit 1
 fi
 
-# Output transcript from data wrapper
-echo "$RESPONSE" | jq -r '.data.transcript // .data // .'
+# Output transcript — try transcript text first, fall back to full data
+echo "$RESPONSE" | jq -r '.data.transcript_only_text // .data.transcript // .data // .'

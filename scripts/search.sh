@@ -31,20 +31,35 @@ fi
 
 API_BASE="${YOINKIT_API_URL:-https://yoinkit.ai/api/v1/openclaw}"
 
-# Default parameters
-LIMIT=10
+# Platform-specific defaults
 SORT=""
+TIME=""
+CONTINUATION=""
+CURSOR=""
+PAGE=""
 
 # Parse additional options
 while [[ $# -gt 0 ]]; do
     key="$1"
     case $key in
-        --limit)
-            LIMIT="$2"
-            shift 2
-            ;;
         --sort)
             SORT="$2"
+            shift 2
+            ;;
+        --time)
+            TIME="$2"
+            shift 2
+            ;;
+        --continuation)
+            CONTINUATION="$2"
+            shift 2
+            ;;
+        --cursor)
+            CURSOR="$2"
+            shift 2
+            ;;
+        --page)
+            PAGE="$2"
             shift 2
             ;;
         *)
@@ -54,11 +69,42 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Build query params
-QUERY_PARAMS="query=$(echo "$QUERY" | jq -sRr @uri)&limit=$LIMIT"
-if [ -n "$SORT" ]; then
-    QUERY_PARAMS+="&sort=$SORT"
-fi
+# Build endpoint with platform-specific params
+ENCODED_QUERY=$(echo "$QUERY" | jq -sRr @uri)
+
+case "$PLATFORM" in
+    youtube)
+        # Params: query (required), uploadDate, sortBy, filter, continuationToken, includeExtras
+        QUERY_PARAMS="query=$ENCODED_QUERY"
+        [ -n "$SORT" ] && QUERY_PARAMS+="&sortBy=$SORT"           # relevance, popular
+        [ -n "$TIME" ] && QUERY_PARAMS+="&uploadDate=$TIME"       # today, this_week, this_month, this_year
+        [ -n "$CONTINUATION" ] && QUERY_PARAMS+="&continuationToken=$CONTINUATION"
+        ;;
+    tiktok)
+        # Params: query (required), date_posted, sort_by, region, cursor, trim
+        QUERY_PARAMS="query=$ENCODED_QUERY"
+        [ -n "$SORT" ] && QUERY_PARAMS+="&sort_by=$SORT"          # relevance, most-liked, date-posted
+        [ -n "$TIME" ] && QUERY_PARAMS+="&date_posted=$TIME"      # yesterday, this-week, this-month, last-3-months, last-6-months, all-time
+        [ -n "$CURSOR" ] && QUERY_PARAMS+="&cursor=$CURSOR"
+        ;;
+    instagram)
+        # Params: query (required), page
+        QUERY_PARAMS="query=$ENCODED_QUERY"
+        [ -n "$PAGE" ] && QUERY_PARAMS+="&page=$PAGE"
+        ;;
+    reddit)
+        # Params: query (required), sort, timeframe, after, trim
+        QUERY_PARAMS="query=$ENCODED_QUERY"
+        [ -n "$SORT" ] && QUERY_PARAMS+="&sort=$SORT"             # relevance, new, top, comment_count
+        [ -n "$TIME" ] && QUERY_PARAMS+="&timeframe=$TIME"        # all, day, week, month, year
+        [ -n "$CURSOR" ] && QUERY_PARAMS+="&after=$CURSOR"
+        ;;
+    pinterest)
+        # Params: query (required), cursor, trim
+        QUERY_PARAMS="query=$ENCODED_QUERY"
+        [ -n "$CURSOR" ] && QUERY_PARAMS+="&cursor=$CURSOR"
+        ;;
+esac
 
 # Make API request
 RESPONSE=$(curl -s -H "Authorization: Bearer $YOINKIT_API_TOKEN" \
