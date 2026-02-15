@@ -19,6 +19,15 @@ fi
 
 API_BASE="${YOINKIT_API_URL:-https://yoinkit.ai/api/v1/openclaw}"
 
+# Normalize YouTube short URLs and youtu.be links
+if [[ "$URL" == *"youtube.com/shorts/"* ]]; then
+    VIDEO_ID=$(echo "$URL" | sed 's|.*youtube.com/shorts/||' | sed 's|[?&].*||')
+    URL="https://www.youtube.com/watch?v=$VIDEO_ID"
+elif [[ "$URL" == *"youtu.be/"* ]]; then
+    VIDEO_ID=$(echo "$URL" | sed 's|.*youtu.be/||' | sed 's|[?&].*||')
+    URL="https://www.youtube.com/watch?v=$VIDEO_ID"
+fi
+
 # Detect platform and construct endpoint
 if [[ "$URL" == *"youtube.com"* ]] || [[ "$URL" == *"youtu.be"* ]]; then
     ENDPOINT="youtube/video?url=$(echo "$URL" | jq -sRr @uri)"

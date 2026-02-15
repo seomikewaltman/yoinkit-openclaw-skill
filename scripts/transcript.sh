@@ -38,6 +38,15 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+# Normalize YouTube short URLs and youtu.be links
+if [[ "$URL" == *"youtube.com/shorts/"* ]]; then
+    VIDEO_ID=$(echo "$URL" | sed 's|.*youtube.com/shorts/||' | sed 's|[?&].*||')
+    URL="https://www.youtube.com/watch?v=$VIDEO_ID"
+elif [[ "$URL" == *"youtu.be/"* ]]; then
+    VIDEO_ID=$(echo "$URL" | sed 's|.*youtu.be/||' | sed 's|[?&].*||')
+    URL="https://www.youtube.com/watch?v=$VIDEO_ID"
+fi
+
 # Detect platform and construct endpoint
 ENCODED_URL=$(echo "$URL" | jq -sRr @uri)
 
