@@ -1,3 +1,8 @@
+---
+name: yoinkit
+description: Research content and pull transcripts from 13 social platforms via the Yoinkit API.
+---
+
 # Yoinkit — OpenClaw Skill
 
 Research content and pull transcripts from 13 social platforms.
