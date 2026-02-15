@@ -32,13 +32,16 @@ Or edit `~/.openclaw/openclaw.json`:
       "yoinkit": {
         "path": "/path/to/yoinkit-openclaw-skill",
         "env": {
-          "YOINKIT_API_TOKEN": "your-token-here"
+          "YOINKIT_API_TOKEN": "your-token-here",
+          "YOINKIT_API_URL": "https://yoinkit.ai/api/v1/openclaw"
         }
       }
     }
   }
 }
 ```
+
+> **Local testing:** Set `YOINKIT_API_URL` to `http://localhost:8000/api/v1/openclaw` to test against a local server. Defaults to production if not set.
 
 ## Commands
 
