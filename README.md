@@ -8,6 +8,7 @@ Search, analyze, and transcribe content across 13 social platforms — trending 
 - **Transcripts** — Extract video transcripts (YouTube, TikTok, Instagram, Twitter/X, Facebook)
 - **Search** — Find content across YouTube, TikTok, Instagram, Reddit, Pinterest
 - **Trending** — See what's trending on YouTube and TikTok (including popular creators and hashtags)
+- **User Feeds** — Get recent posts/videos from specific creators (YouTube, TikTok, Instagram, Twitter/X, Facebook, Threads, Bluesky, Truth Social)
 - **Research** — Automated workflows combining search + trending + transcripts across platforms
 
 ## Requirements
@@ -78,6 +79,11 @@ yoinkit search youtube "AI tools" --sort relevance --time this_week
 yoinkit search tiktok "productivity" --sort most-liked
 yoinkit search reddit "home automation" --sort top --time month
 
+# Get a creator's recent uploads
+yoinkit feed youtube MrBeast
+yoinkit feed tiktok @garyvee
+yoinkit feed instagram ali-abdaal --type reels
+
 # Get trending content
 yoinkit trending youtube
 yoinkit trending tiktok
@@ -105,30 +111,34 @@ Just ask your assistant naturally:
 
 ## Platform Support
 
-| Platform | Content | Transcript | Search | Trending |
-|----------|:-------:|:----------:|:------:|:--------:|
-| YouTube | ✅ | ✅ | ✅ | ✅ |
-| TikTok | ✅ | ✅ | ✅ | ✅ |
-| Instagram | ✅ | ✅ | ✅ | — |
-| Twitter/X | ✅ | ✅ | — | — |
-| Facebook | ✅ | ✅ | — | — |
-| LinkedIn | ✅ | — | — | — |
-| Reddit | ✅ | — | ✅ | — |
-| Pinterest | ✅ | — | ✅ | — |
-| Threads | ✅ | — | — | — |
-| Bluesky | ✅ | — | — | — |
-| Truth Social | ✅ | — | — | — |
-| Twitch | ✅ | — | — | — |
-| Kick | ✅ | — | — | — |
+| Platform | Content | Transcript | Search | Trending | User Feed |
+|----------|:-------:|:----------:|:------:|:--------:|:---------:|
+| YouTube | ✅ | ✅ | ✅ | ✅ | ✅ |
+| TikTok | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Instagram | ✅ | ✅ | ✅ | — | ✅ |
+| Twitter/X | ✅ | ✅ | — | — | ✅ |
+| Facebook | ✅ | ✅ | — | — | ✅ |
+| LinkedIn | ✅ | — | — | — | — |
+| Reddit | ✅ | — | ✅ | — | — |
+| Pinterest | ✅ | — | ✅ | — | — |
+| Threads | ✅ | — | — | — | ✅ |
+| Bluesky | ✅ | — | — | — | ✅ |
+| Truth Social | ✅ | — | — | — | ✅ |
+| Twitch | ✅ | — | — | — | — |
+| Kick | ✅ | — | — | — | — |
 
 ## Cron Examples
 
 See the `examples/` directory for ready-to-use OpenClaw cron job configurations:
 
 - **`daily-trends.json`** — Morning trend check across YouTube and TikTok
+- **`creator-monitor.json`** — Check specific creators for new uploads daily at 7 AM
+- **`creator-transcripts.json`** — Pull and summarize transcripts from creator uploads at 8 AM
 - **`weekly-research.json`** — Deep multi-platform research every Monday
 - **`viral-alert.json`** — Check for viral content every 2 hours
 - **`competitor-watch.json`** — Monitor competitor content weekly
+- **`niche-monitor.json`** — Daily cross-platform question/pain-point mining
+- **`video-breakdown.json`** — On-demand template for analyzing a specific video
 
 Copy any example and add it via OpenClaw's cron system.
 

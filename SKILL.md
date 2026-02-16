@@ -141,6 +141,31 @@ yoinkit trending tiktok --type hashtags --period 30
 
 ---
 
+### `yoinkit feed <platform> <handle> [options]`
+
+Get a user's recent posts/videos.
+
+**Supported:** YouTube, TikTok, Instagram, Twitter/X, Facebook, Threads, Bluesky, Truth Social
+
+**Options:**
+- `--type posts|reels|videos` — Content type (Instagram, Facebook). Default: `posts`
+- `--sort latest|popular` — Sort order (YouTube only)
+- `--cursor TOKEN` — Pagination cursor
+
+```bash
+yoinkit feed youtube MrBeast
+yoinkit feed youtube @mkbhd --sort latest
+yoinkit feed tiktok garyvee
+yoinkit feed instagram ali-abdaal --type reels
+yoinkit feed twitter elonmusk
+yoinkit feed threads zuck
+yoinkit feed bluesky user.bsky.social
+```
+
+**Note:** Handles work with or without the `@` prefix.
+
+---
+
 ### `yoinkit research "<topic>" [options]`
 
 Automated research workflow — combines search and trending across platforms.
@@ -175,6 +200,12 @@ You don't need exact command syntax. The LLM will map natural requests to the ri
 
 > "Find popular Reddit posts about home automation from this week"
 → `yoinkit search reddit "home automation" --sort top --time week`
+
+> "What has MrBeast posted this week?"
+→ `yoinkit feed youtube MrBeast`
+
+> "Check @garyvee's latest TikToks"
+→ `yoinkit feed tiktok garyvee`
 
 > "Research what creators are doing with AI tools"
 → `yoinkit research "AI tools" --platforms youtube,tiktok,reddit`

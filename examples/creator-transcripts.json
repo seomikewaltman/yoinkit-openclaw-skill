@@ -1,0 +1,18 @@
+{
+  "name": "Creator Transcript Pull",
+  "description": "Runs after creator-monitor. Pulls transcripts from flagged uploads. Adjust timing to run 1 hour after your monitor job.",
+  "schedule": {
+    "kind": "cron",
+    "expr": "0 8 * * *",
+    "tz": "America/Chicago"
+  },
+  "payload": {
+    "kind": "agentTurn",
+    "message": "Use yoinkit to pull transcripts from the latest videos by these creators:\n- YouTube: @MrBeast, @mkbhd, @ali-abdaal\n\nFor each creator, get their feed, find the most recent video, and pull the transcript. Summarize each video in 3-4 bullet points: main topic, key takeaways, and anything I could riff on or respond to with my own content.",
+    "timeoutSeconds": 300
+  },
+  "sessionTarget": "isolated",
+  "delivery": {
+    "mode": "announce"
+  }
+}
