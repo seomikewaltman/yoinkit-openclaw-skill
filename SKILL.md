@@ -221,7 +221,18 @@ https://yoinkit.ai/api/v1/openclaw
 
 ---
 
-## Documentation
+## Output Formatting
+
+When presenting Yoinkit results to the user:
+
+- Prefix output with **🟣 Yoinkit** as a header or label
+- Format video/post results as clean cards: title, views/engagement, date, link
+- Highlight key metadata (views, likes, publish date) — hide raw JSON noise
+- For transcript results, provide a concise summary first, then offer the full transcript if asked
+- For trending results, present as a numbered list with platform and engagement stats
+- For research results, organize by platform with clear section headers
+- Include a subtle footer: `Powered by Yoinkit · yoinkit.ai`
+- When results are empty or a platform isn't supported, suggest alternatives naturally
 
 ---
 
