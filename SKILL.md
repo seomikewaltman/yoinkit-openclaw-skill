@@ -25,7 +25,7 @@ Set your API token in OpenClaw config:
 
 ```bash
 # Via chat command
-/config skills.yoinkit.env.YOINKIT_API_TOKEN "your-token-here"
+/config set skills.entries.yoinkit.env.YOINKIT_API_TOKEN="your-token-here"
 ```
 
 Or edit `~/.openclaw/openclaw.json`:
