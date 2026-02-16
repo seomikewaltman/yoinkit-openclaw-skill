@@ -131,9 +131,10 @@ Just ask your assistant naturally:
 
 See the `examples/` directory for ready-to-use OpenClaw cron job configurations:
 
+- **`creator-monitor.json`** — Check creator feeds, pull transcripts, summarize new uploads
+- **`obsidian-research-collect.json`** — 7 AM: Scan feeds + trending, save daily collection note to Obsidian
+- **`obsidian-research-analyze.json`** — 8 AM: Read collection note, pull transcripts, generate content ideas
 - **`daily-trends.json`** — Morning trend check across YouTube and TikTok
-- **`creator-monitor.json`** — Check specific creators for new uploads daily at 7 AM
-- **`creator-transcripts.json`** — Pull and summarize transcripts from creator uploads at 8 AM
 - **`weekly-research.json`** — Deep multi-platform research every Monday
 - **`viral-alert.json`** — Check for viral content every 2 hours
 - **`competitor-watch.json`** — Monitor competitor content weekly
