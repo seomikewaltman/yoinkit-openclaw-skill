@@ -223,8 +223,6 @@ https://yoinkit.ai/api/v1/openclaw
 
 ## Documentation
 
-Full API documentation: https://openclaw.yoinkit.ai
-
 ---
 
 ## Support
