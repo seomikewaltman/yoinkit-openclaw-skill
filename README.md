@@ -1,13 +1,14 @@
-# yoinkit
+# YoinkIt — OpenClaw Skill
 
-OpenClaw skill for social media research powered by Yoinkit.
+Search, analyze, and transcribe content across 13 social platforms — trending topics, video transcripts, post metadata, and multi-platform research workflows.
 
 ## Features
 
+- **Content** — Pull post/video metadata from 13 platforms (YouTube, TikTok, Instagram, Twitter/X, Facebook, LinkedIn, Reddit, Pinterest, Threads, Bluesky, Truth Social, Twitch, Kick)
+- **Transcripts** — Extract video transcripts (YouTube, TikTok, Instagram, Twitter/X, Facebook)
 - **Search** — Find content across YouTube, TikTok, Instagram, Reddit, Pinterest
-- **Trending** — See what's trending on YouTube and TikTok
-- **Transcripts** — Extract transcripts from videos (YouTube, TikTok, Instagram, Twitter, Facebook)
-- **Research** — Automated research workflows combining multiple API calls
+- **Trending** — See what's trending on YouTube and TikTok (including popular creators and hashtags)
+- **Research** — Automated workflows combining search + trending + transcripts across platforms
 
 ## Requirements
 
@@ -18,16 +19,16 @@ OpenClaw skill for social media research powered by Yoinkit.
 ## Installation
 
 ```bash
-# Clone this repository
-git clone https://github.com/seomikewaltman/yoinkit-openclaw-skill.git
+npx clawhub install yoinkit
+```
 
-# Add to your OpenClaw config
-# Edit ~/.openclaw/openclaw.json:
+Then set your API token in OpenClaw config:
+
+```json
 {
   "skills": {
     "entries": {
       "yoinkit": {
-        "path": "/path/to/yoinkit-openclaw-skill",
         "env": {
           "YOINKIT_API_TOKEN": "your-token-here"
         }
@@ -37,10 +38,23 @@ git clone https://github.com/seomikewaltman/yoinkit-openclaw-skill.git
 }
 ```
 
-Or configure via chat:
+### Local Development
 
-```
-/config skills.yoinkit.env.YOINKIT_API_TOKEN "your-token"
+To test against a local server, add `YOINKIT_API_URL`:
+
+```json
+{
+  "skills": {
+    "entries": {
+      "yoinkit": {
+        "env": {
+          "YOINKIT_API_TOKEN": "your-token-here",
+          "YOINKIT_API_URL": "http://localhost:8000/api/v1/openclaw"
+        }
+      }
+    }
+  }
+}
 ```
 
 ## Usage
@@ -48,43 +62,80 @@ Or configure via chat:
 ### Commands
 
 ```bash
-# Get a transcript
-yoinkit transcript https://youtube.com/watch?v=abc123
-
-# Get post content
+# Get content/metadata from any platform
+yoinkit content https://youtube.com/watch?v=abc123
 yoinkit content https://twitter.com/user/status/123
+yoinkit content https://reddit.com/r/tech/comments/abc/post
+
+# Get a video transcript
+yoinkit transcript https://youtube.com/watch?v=abc123
+yoinkit transcript https://youtube.com/shorts/abc123
+yoinkit transcript https://tiktok.com/@user/video/123 --language en
 
 # Search a platform
-yoinkit search youtube "AI tools for creators" --limit 10
+yoinkit search youtube "AI tools for creators"
+yoinkit search youtube "AI tools" --sort relevance --time this_week
+yoinkit search tiktok "productivity" --sort most-liked
+yoinkit search reddit "home automation" --sort top --time month
 
 # Get trending content
-yoinkit trending tiktok --country US
+yoinkit trending youtube
+yoinkit trending tiktok
+yoinkit trending tiktok --type popular --order like --period 7
+yoinkit trending tiktok --type hashtags --period 30
 
-# Full research workflow
+# Multi-platform research workflow
+yoinkit research "AI tools" --platforms youtube,tiktok,reddit
 yoinkit research "home automation" --platforms youtube,reddit --transcripts
 ```
 
 ### Natural Language
 
-Just ask your assistant:
+Just ask your assistant naturally:
 
-> "What's trending on YouTube in the AI space?"
+> "What's trending on YouTube right now?"
 
-> "Find viral Reddit posts about productivity from this week"
+> "Search TikTok for productivity tips from this week, sorted by most liked"
 
-> "Pull the transcript from this TikTok and summarize the key points"
+> "Pull the transcript from this YouTube video and summarize it"
+
+> "Research what people are saying about AI tools across YouTube, TikTok, and Reddit"
+
+> "Get me the details on this Instagram post"
+
+## Platform Support
+
+| Platform | Content | Transcript | Search | Trending |
+|----------|:-------:|:----------:|:------:|:--------:|
+| YouTube | ✅ | ✅ | ✅ | ✅ |
+| TikTok | ✅ | ✅ | ✅ | ✅ |
+| Instagram | ✅ | ✅ | ✅ | — |
+| Twitter/X | ✅ | ✅ | — | — |
+| Facebook | ✅ | ✅ | — | — |
+| LinkedIn | ✅ | — | — | — |
+| Reddit | ✅ | — | ✅ | — |
+| Pinterest | ✅ | — | ✅ | — |
+| Threads | ✅ | — | — | — |
+| Bluesky | ✅ | — | — | — |
+| Truth Social | ✅ | — | — | — |
+| Twitch | ✅ | — | — | — |
+| Kick | ✅ | — | — | — |
 
 ## Cron Examples
 
-See the `examples/` directory for ready-to-use cron job configurations:
+See the `examples/` directory for ready-to-use OpenClaw cron job configurations:
 
-- `daily-trends.json` — Morning trend check
-- `weekly-research.json` — Deep research every Monday
-- `viral-alert.json` — Hourly viral content monitoring
+- **`daily-trends.json`** — Morning trend check across YouTube and TikTok
+- **`weekly-research.json`** — Deep multi-platform research every Monday
+- **`viral-alert.json`** — Check for viral content every 2 hours
+- **`competitor-watch.json`** — Monitor competitor content weekly
+
+Copy any example and add it via OpenClaw's cron system.
 
 ## Documentation
 
-Full API documentation: https://openclaw.yoinkit.ai
+- Full API docs: <https://openclaw.yoinkit.ai>
+- Platform reference: [references/platforms.md](references/platforms.md)
 
 ## License
 

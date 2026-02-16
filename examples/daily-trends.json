@@ -7,7 +7,7 @@
   },
   "payload": {
     "kind": "agentTurn",
-    "message": "Run yoinkit trending for youtube (--category tech) and tiktok. Summarize what's trending today and flag any viral content (>500K views) I should consider responding to."
+    "message": "Use yoinkit to check what's trending on YouTube and TikTok right now. Summarize the top trends and flag any content with over 500K views that's relevant to my content niches. Keep it brief — bullet points are fine."
   },
   "sessionTarget": "isolated",
   "delivery": {
