@@ -223,6 +223,9 @@ https://yoinkit.ai/api/v1/openclaw
 
 ## Output Formatting
 
+A Yoinkit logo is included at `assets/yoinkit-logo.png` (200x200, transparent background, gradient icon).
+When the platform supports images/media, send the logo alongside the first result in a conversation.
+
 When presenting Yoinkit results to the user:
 
 - Prefix output with **🟣 Yoinkit** as a header or label
