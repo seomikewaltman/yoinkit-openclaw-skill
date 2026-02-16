@@ -5,7 +5,7 @@ description: Search, analyze, and transcribe content across 13 social platforms 
 
 # Yoinkit — OpenClaw Skill
 
-Research content and pull transcripts from 13 social platforms.
+Search, analyze, and transcribe content across 13 social platforms — trending topics, video transcripts, post metadata, creator feeds, and multi-platform research workflows.
 
 ## Platform Reference
 
@@ -35,7 +35,6 @@ Or edit `~/.openclaw/openclaw.json`:
   "skills": {
     "entries": {
       "yoinkit": {
-        "path": "/path/to/yoinkit-openclaw-skill",
         "env": {
           "YOINKIT_API_TOKEN": "your-token-here",
           "YOINKIT_API_URL": "https://yoinkit.ai/api/v1/openclaw"

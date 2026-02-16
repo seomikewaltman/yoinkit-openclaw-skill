@@ -107,6 +107,10 @@ Just ask your assistant naturally:
 
 > "Research what people are saying about AI tools across YouTube, TikTok, and Reddit"
 
+> "What has MrBeast posted this week?"
+
+> "Check @garyvee's latest TikToks"
+
 > "Get me the details on this Instagram post"
 
 ## Platform Support
